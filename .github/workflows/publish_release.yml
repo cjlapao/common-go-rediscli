@@ -16,7 +16,7 @@ on:
         default: false
 jobs:
   publish_release:
-    if: ${{ inpust.enabled }}
+    if: ${{ inputs.enabled }}
     name: Publish Release
     needs: build
     runs-on: ubuntu-latest
