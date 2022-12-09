@@ -30,10 +30,11 @@ jobs:
     secrets: inherit
     needs: build
     with:
+      name: rediscli
       debug: false
       enabled: true
   publish_helm:
-    name: Publish Binaries
+    name: Publish Helm
     uses: ./.github/workflows/publish_helm.yml
     secrets: inherit
     needs: build
@@ -41,4 +42,4 @@ jobs:
       debug: false
       enabled: true
       name: rediscli
-      image_name: cjlapao/rediscli
+      url: rediscli.carloslapao.com
