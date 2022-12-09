@@ -37,7 +37,7 @@ jobs:
     name: Publish Helm
     uses: ./.github/workflows/publish_helm.yml
     secrets: inherit
-    needs: build
+    needs: publish_release
     with:
       debug: false
       enabled: false

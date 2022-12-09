@@ -21,7 +21,6 @@ jobs:
   publish-helm:
     if: ${{ inputs.enabled }}
     name: Publish Helm Chart
-    needs: publish_release
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

@@ -18,7 +18,6 @@ jobs:
   publish_release:
     if: ${{ inputs.enabled }}
     name: Publish Release
-    needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
