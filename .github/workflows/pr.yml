@@ -25,8 +25,8 @@ jobs:
       name: rediscli
       image_name: cjlapao/rediscli
   publish_release:
-    name: Publish Binaries
-    uses: ./.github/workflows/publish_binaries.yml
+    name: Publish Release
+    uses: ./.github/workflows/publish_release.yml
     secrets: inherit
     needs: build
     with:
