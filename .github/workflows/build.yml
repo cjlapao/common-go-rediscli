@@ -1,0 +1,93 @@
+name: Build Code
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      debug:
+        required: false
+        type: boolean
+        default: false
+      run_tests:
+        required: true
+        type: boolean
+        default: true
+      bump_version:
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'go' ]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.19
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.8.1
+
+    - name: Build
+      working-directory: src
+      run: go build -v ./...
+
+    - name: Test
+      if: ${{ inputs.run_tests == true}}
+      run: |
+        go install github.com/axw/gocov/gocov@latest
+        go install github.com/AlekSi/gocov-xml@latest
+        go install github.com/matm/gocov-html/cmd/gocov-html@latest
+
+        go test -coverprofile coverage.txt -covermode count -v ./...
+        gocov convert coverage.txt | gocov-xml > cobertura-coverage.xml
+
+    - name: Code Coverage Summary Report
+      if: ${{ inputs.run_tests == true}}
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: cobertura-coverage.xml
+        badge: true
+        fail_below_min: false
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: false
+        indicators: true
+        output: both
+        thresholds: '80 80'
+        
+    - name: Add Coverage PR Comment
+      if: ${{ inputs.run_tests == true}}
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        recreate: true
+        path: code-coverage-results.md
+    
+    - name: Helm Chart Lint
+      if: ${{ inputs.run_tests == true}}
+      run: |
+        helm lint ./charts
+
+    - shell: bash
+      if: ${{ inputs.bump_version == true}}
+      name: Bump package version
+      run: |
+        NEW_TAG_NAME=$(echo ${{ steps.tag_version.outputs.new_tag }} | sed 's/v//g')
+        sed -i "s/^var ver = \"[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+\"/var ver = \"$NEW_TAG_NAME\"/g" ./src/main.go
+        sed -i "s/^version: [[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+/version: $NEW_TAG_NAME/g" ./charts/Chart.yaml
+        sed -i "s/^appVersion: \"[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+\"/appVersion: \"$NEW_TAG_NAME\"/g" ./charts/Chart.yaml
+    - name: Upload changes
+      if: ${{ inputs.bump_version == true}}
+      uses: stefanzweifel/git-auto-commit-action@v4

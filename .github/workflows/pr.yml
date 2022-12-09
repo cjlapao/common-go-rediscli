@@ -1,0 +1,44 @@
+name: PR Builder
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build and Test
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    with:
+      debug: false
+      run_tests: false
+      bump_version: false
+      name: rediscli
+  build_container:
+    name: Build Docker Container
+    uses: ./.github/workflows/build_container.yml
+    secrets: inherit
+    needs: build
+    with:
+      debug: false
+      enabled: false
+      name: rediscli
+      image_name: cjlapao/rediscli
+  publish_release:
+    name: Publish Binaries
+    uses: ./.github/workflows/publish_binaries.yml
+    secrets: inherit
+    needs: build
+    with:
+      debug: false
+      enabled: false
+  publish_helm:
+    name: Publish Binaries
+    uses: ./.github/workflows/publish_helm.yml
+    secrets: inherit
+    needs: build
+    with:
+      debug: false
+      enabled: false
+      name: rediscli
+      image_name: cjlapao/rediscli

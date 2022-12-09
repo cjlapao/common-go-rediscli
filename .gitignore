@@ -18,3 +18,10 @@ _site/*
 .jekyll-cache/*
 coverage.txt
 .local
+*.env
+*.pem
+*.key
+*.pub
+*.der
+
+#executable
