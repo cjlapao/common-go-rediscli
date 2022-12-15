@@ -13,8 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-*common-go*
-_site/*
+*.env
+bin/*
 .jekyll-cache/*
-coverage.txt
-.local
+_site/*
+*.override*
+*.personal*
