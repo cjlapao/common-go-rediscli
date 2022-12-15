@@ -2,20 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: {{ .Values.namespace.name }}
-  name: {{ include "http-load-tester.fullname" .}}
+  name: {{ include "rediscli.fullname" .}}
   labels: 
-    {{- include "http-load-tester.labels" . | nindent 4 }}
+    {{- include "rediscli.labels" . | nindent 4 }}
 spec: 
   {{- if .Values.app.autoscaling.enabled }}
   replicas: {{ .Values.app.autoscaling.startingReplicas }}
   {{- end }}
   selector: 
     matchLabels:
-    {{- include "http-load-tester.selectorLabels" . | nindent 6 }}
+    {{- include "rediscli.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels: 
-        {{- include "http-load-tester.labels" . | nindent 8 }}
+        {{- include "rediscli.labels" . | nindent 8 }}
     spec:
       containers: 
       - name: servicebus-cli 
@@ -30,7 +30,7 @@ spec:
         - name: API_PREFIX
           valueFrom:
             configMapKeyRef:
-              name: {{ include "http-load-tester.fullname" .}}
+              name: {{ include "rediscli.fullname" .}}
               key: api_prefix
 
         {{ if .Values.app.resources.enabled }}

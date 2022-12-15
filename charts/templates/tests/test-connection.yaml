@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "http-load-tester.fullname" . }}-test-connection"
+  name: "{{ include "rediscli.fullname" . }}-test-connection"
   labels:
-    {{- include "http-load-tester.labels" . | nindent 4 }}
+    {{- include "rediscli.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "http-load-tester.fullname" . }}:{{ .Values.service.port }}/api/probe']
+      args: ['{{ include "rediscli.fullname" . }}:{{ .Values.service.port }}/api/probe']
   restartPolicy: Never

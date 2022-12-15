@@ -1,12 +1,12 @@
 {{- $namespace := .Values.namespace.name }}
-{{- $fullname := include "http-load-tester.fullname" .}}
+{{- $fullname := include "rediscli.fullname" .}}
 {{- $serviceHttpPort := .Values.service.port }}
 {{- if and (eq (.Values.ingress.type | lower) "istio") (.Values.ingress.enabled) }}
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "http-load-tester.fullname" .}}
-  labels: {{ include "http-load-tester.labels" . | nindent 4}}
+  name: {{ include "rediscli.fullname" .}}
+  labels: {{ include "rediscli.labels" . | nindent 4}}
   namespace: {{ .Values.namespace.name }}
 spec:
   gateways:

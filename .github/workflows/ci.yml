@@ -1,9 +1,11 @@
 name: CI Release
 
 on:
-  push:
-    branches: [ main ]
-    
+  pull_request:
+    types: 
+      - closed
+    branches: 
+      - main
 jobs:
   build:
     name: Build and Test
@@ -13,7 +15,7 @@ jobs:
       debug: false
       run_tests: false
       bump_version: true
-      name: rediscli
+      name: rabbitmqcli
   build_container:
     name: Build Docker Container
     uses: ./.github/workflows/build_container.yml
@@ -22,15 +24,15 @@ jobs:
     with:
       debug: false
       enabled: true
-      name: rediscli
-      image_name: cjlapao/rediscli
+      name: rabbitmqcli
+      image_name: cjlapao/rabbitmqcli
   publish_release:
     name: Publish Release
     uses: ./.github/workflows/publish_release.yml
     secrets: inherit
     needs: build
     with:
-      name: rediscli
+      name: rabbitmqcli
       debug: false
       enabled: true
   publish_helm:
@@ -41,5 +43,5 @@ jobs:
     with:
       debug: false
       enabled: true
-      name: rediscli
-      url: rediscli.carloslapao.com
+      name: rabbitmqcli
+      url: rabbitmqcli.carloslapao.com
